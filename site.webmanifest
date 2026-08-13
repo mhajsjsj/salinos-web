@@ -1,0 +1,10 @@
+{
+  "name": "سالينوس",
+  "short_name": "سالينوس",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#030b12",
+  "theme_color": "#030b12",
+  "lang": "ar",
+  "dir": "rtl"
+}
