@@ -42,7 +42,7 @@
       function rejectMemory(){if(!pendingMemory)return;pendingMemory=null;messages.push({role:'bot',text:'تمام، مش هحفظها.'});render();say('تمام، مش هحفظها.', 'neutral')}
       function recall(text){const t=normalize(text);return activeFacts().find(fact=>normalize(fact.value).split(' ').some(word=>word.length>3&&t.includes(word)))}
       function memoryCandidate(text){const clean=String(text).trim();if(/^(افتكر|احفظ|سجل|خلي بالك|متنساش)\s+/i.test(clean))return clean.replace(/^(افتكر|احفظ|سجل|خلي بالك|متنساش)\s+/i,'').trim();if(/^(انا بحب|انا بحبش|هوايتي|المفضل عندي)\b/i.test(clean))return clean;return''}
-      function memoryDate(memory){return new Date(memory.updatedAt).toLocaleDateString('ar-EG',{year:'numeric',month:'short',day:'numeric'})}
+      function memoryDate(memory){if(!memory.updatedAt||memory.source==='legacy-local')return'قبل تحديث الذاكرة';return new Date(memory.updatedAt).toLocaleDateString('ar-EG',{year:'numeric',month:'short',day:'numeric'})}
       function reply(text){
         const t=normalize(text), mood=emotion(text), remembered=recall(text), nameMatch=text.match(/(?:انا اسمي|اسمي)\s+([^\s،,.!?؟]{2,20})/), candidate=memoryCandidate(text);
         const topic=t.split(' ').filter(word=>word.length>3&&!/النهارده|عشان|كده|اوي|بس|انت|انا|سالينوس/.test(word))[0]||'';
