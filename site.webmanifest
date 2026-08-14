@@ -1,8 +1,12 @@
 {
   "name": "سالينوس",
   "short_name": "سالينوس",
+  "id": "./",
+  "description": "واجهة سالينوس المحلية للحديث والذاكرة والتفاعل على جهازك.",
   "start_url": "./",
+  "scope": "./",
   "display": "standalone",
+  "orientation": "any",
   "background_color": "#030b12",
   "theme_color": "#030b12",
   "lang": "ar",
