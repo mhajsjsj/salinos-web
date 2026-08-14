@@ -45,13 +45,14 @@
       function normalizeStoredCorrection(correction,index){if(!correction||!correction.user||!correction.assistant)return null;return{...correction,correctionId:correction.correctionId||`legacy-correction-${index}`,userId:correction.userId||localUserId,deviceId:correction.deviceId||localDeviceId,sessionId:correction.sessionId||'legacy-local'}}
       function belongsToLocalUser(record){return record&&record.userId===localUserId&&record.deviceId===localDeviceId}
       function belongsToCurrentSession(record){return belongsToLocalUser(record)&&record.sessionId===localSessionId}
-      function visibleMessages(){const matcher=chatView==='session'?belongsToCurrentSession:belongsToLocalUser;return messages.filter(matcher)}
+      function scopedRecords(records,sessionOnly=false){return records.filter(record=>belongsToLocalUser(record)&&(!sessionOnly||record.sessionId===localSessionId))}
+      function visibleMessages(){return scopedRecords(messages,chatView==='session')}
       const recentBotReplies=()=>visibleMessages().filter(message=>message.role==='bot').slice(-8).map(message=>message.text);
       function choose(answers,seed=''){const recent=new Set(recentBotReplies());const fresh=answers.filter(answer=>!recent.has(answer));const number=Array.from(seed+messages.length).reduce((total,char)=>total+char.charCodeAt(0),0);if(fresh.length)return fresh[number%fresh.length];const base=answers[number%answers.length];const followUps=['قولّي أكتر وأنا معاك.','نكملها واحدة واحدة.','إيه رأيك نركز في خطوة عملية؟','أنا مركز معاك، كمل.','تعالى نفهم الجزء ده بهدوء.','لو تحب نغيّر زاوية التفكير، أنا جاهز.','قولّي آخر حاجة حصلت عشان أتابعك صح.','ممكن نبدأ بحاجة بسيطة دلوقتي.'];return `${base} ${followUps[Math.floor(messages.length/2)%followUps.length]}`}
       function emotion(text){const t=normalize(text);if(/زعلان|حزين|متضايق|تعبان|مخنوق|وحش/.test(t))return'sad';if(/واو|معقول|بجد|مفاج|مش مصدق/.test(t))return'surprised';if(/حلو|تمام|شكرا|مبسوط|جامد|عاش/.test(t))return'happy';return'neutral'}
-      function activeFacts(){return facts.filter(fact=>fact.status==='active'&&belongsToLocalUser(fact))}
+      function activeFacts(){return scopedRecords(facts).filter(fact=>fact.status==='active')}
       function saveFacts(){localStorage.setItem(factKey,JSON.stringify(facts))}
-      function activeCorrections(){return corrections.filter(correction=>correction.status==='active'&&belongsToLocalUser(correction))}
+      function activeCorrections(){return scopedRecords(corrections).filter(correction=>correction.status==='active')}
       function saveCorrections(){localStorage.setItem(correctionKey,JSON.stringify(corrections))}
       function createMemory(value,source='user-confirmed'){const now=Date.now();return{memoryId:`m-${now}-${Math.random().toString(36).slice(2,7)}`,value:String(value).trim(),status:'active',source,userId:localUserId,deviceId:localDeviceId,sessionId:localSessionId,createdAt:now,updatedAt:now}}
       function createCorrection(user,assistant){const now=Date.now();return{correctionId:`c-${now}-${Math.random().toString(36).slice(2,7)}`,user:String(user).trim(),assistant:String(assistant).trim(),status:'active',source:'user-confirmed-local',userId:localUserId,deviceId:localDeviceId,sessionId:localSessionId,createdAt:now,updatedAt:now}}
